@@ -21,7 +21,7 @@ class ViewController: UIViewController {
         
         let viewController2 = ViewController2()
         viewController2.title = "Second title"
-        
+
         let viewControllers = [viewController, viewController2]
         
         let options = PagingMenuOptions()

@@ -175,7 +175,7 @@ public class PagingMenuController: UIViewController, UIScrollViewDelegate {
         
         currentPage = page
         menuView.moveToMenu(page: currentPage, animated: animated)
-        
+
         // hide paging views if it's moving to far away
         hidePagingViewsIfNeeded(previousPage)
         
@@ -203,7 +203,18 @@ public class PagingMenuController: UIViewController, UIScrollViewDelegate {
     }
     
     // MARK: - UIScrollViewDelegate
-    
+
+    public func scrollViewDidScroll(scrollView: UIScrollView) {
+        guard scrollView.isEqual(contentScrollView) else { return }
+
+        // Do nothing when ViewController is just scrolled to ScrollView
+        if scrollView.contentOffset.x % currentViewController.view.frame.width == 0 {
+            return
+        }
+        let transitionRate = (scrollView.contentOffset.x - currentViewController.view.frame.origin.x) / currentViewController.view.frame.width
+        menuView.underlineTransition(transitionRate)
+    }
+
     public func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
         guard scrollView.isEqual(contentScrollView) else { return }
 

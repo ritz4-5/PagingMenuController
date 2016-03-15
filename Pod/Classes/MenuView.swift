@@ -68,7 +68,7 @@ public class MenuView: UIScrollView {
         }
         UIView.animateWithDuration(duration, animations: { [weak self] () -> Void in
             guard let _ = self else { return }
-            
+
             self!.focusMenuItem()
             self!.positionMenuItemViews()
         }) { [weak self] (_) in
@@ -78,7 +78,6 @@ public class MenuView: UIScrollView {
             if case .Infinite = self!.options.menuDisplayMode {
                 self!.relayoutMenuItemViews()
             }
-            self!.positionMenuItemViews()
             self!.setNeedsLayout()
             self!.layoutIfNeeded()
             
@@ -115,7 +114,37 @@ public class MenuView: UIScrollView {
             }
         }
     }
-    
+
+    internal func underlineTransition(rate: CGFloat) {
+        guard case let .Underline(height, _, horizontalPadding, verticalPadding) = options.menuItemMode else { return }
+
+        let width = menuItemViews[currentPage].bounds.width - horizontalPadding * 2
+        let targetWidth: CGFloat
+        let targetXAmount: CGFloat
+        if rate < 0 {
+            let targetPage = currentPage - 1
+            if 0 <= targetPage && targetPage < menuItemViews.count {
+                targetXAmount = menuItemViews[targetPage].bounds.width
+                targetWidth = menuItemViews[targetPage].bounds.width - horizontalPadding * 2
+            } else {
+                targetWidth = width
+                targetXAmount = width
+            }
+        } else {
+            let targetPage = currentPage + 1
+            if 0 <= targetPage && targetPage < menuItemViews.count {
+                targetXAmount = width
+                targetWidth = menuItemViews[targetPage].bounds.width - horizontalPadding * 2
+            } else {
+                targetWidth = width
+                targetXAmount = width
+            }
+        }
+
+        underlineView.frame = CGRectMake(menuItemViews[currentPage].frame.origin.x + horizontalPadding + targetXAmount*rate, options.menuHeight - (height + verticalPadding), width + (targetWidth-width)*abs(rate), height)
+    }
+
+
     // MARK: - Private method
     
     private func setupScrollView() {
@@ -215,7 +244,7 @@ public class MenuView: UIScrollView {
     
     private func animateUnderlineViewIfNeeded() {
         guard case let .Underline(_, _, horizontalPadding, _) = options.menuItemMode else { return }
-        
+
         let targetFrame = menuItemViews[currentPage].frame
         underlineView.frame.origin.x = targetFrame.minX + horizontalPadding
         underlineView.frame.size.width = targetFrame.width - horizontalPadding * 2
