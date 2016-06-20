@@ -78,6 +78,7 @@ public class MenuView: UIScrollView {
             if case .Infinite = self!.options.menuDisplayMode {
                 self!.relayoutMenuItemViews()
             }
+            self!.positionMenuItemViews()
             self!.setNeedsLayout()
             self!.layoutIfNeeded()
             
